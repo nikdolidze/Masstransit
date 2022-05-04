@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Sample.Components.Consumers;
 using Serilog;
 using Serilog.Events;
+using GreenPipes;
 using MassTransit.Definition;
 
 namespace Sample.Service
@@ -65,6 +66,7 @@ namespace Sample.Service
             return Bus.Factory.CreateUsingRabbitMq(cfg =>
             {
                 cfg.ConfigureEndpoints(context);
+                cfg.UseMessageRetry(t => t.Immediate(50));
             });
         }
 

@@ -21,7 +21,9 @@ namespace Sample.Components.Consumers
         public async Task Consume(ConsumeContext<SubmitOrder> context)
         {
             _logger.Log(LogLevel.Information, "SubmitCusotmerNumber : {CustomerNumber}", context.Message.CustomerNumber);
+            Console.WriteLine("-----------------------------------");
 
+            throw new Exception();
 
             if (context.Message.CustomerNumber.Contains("Test"))
             {
