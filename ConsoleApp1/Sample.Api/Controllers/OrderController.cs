@@ -1,6 +1,8 @@
 ﻿using MassTransit;
+using MassTransit.Definition;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Sample.Components.Consumers;
 using Sample.Contracts;
 using System;
 using System.Collections.Generic;
@@ -17,11 +19,13 @@ namespace Sample.Api.Controllers
 
         private readonly ILogger<OrderController> _logger;
         readonly IRequestClient<SubmitOrder> _submitOrderRequestClient;
+        private readonly ISendEndpointProvider _sendEndpointProvider;
 
-        public OrderController(ILogger<OrderController> logger, IRequestClient<SubmitOrder> submitOrderRequestClient)
+        public OrderController(ILogger<OrderController> logger, IRequestClient<SubmitOrder> submitOrderRequestClient,ISendEndpointProvider sendEndpointProvider)
         {
             _logger = logger;
             _submitOrderRequestClient = submitOrderRequestClient;
+            _sendEndpointProvider = sendEndpointProvider;
         }
 
         [HttpPost]
@@ -46,6 +50,22 @@ namespace Sample.Api.Controllers
                 return BadRequest(response);
             }
 
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Put(string customerNumber)
+        {
+            var a = KebabCaseEndpointNameFormatter.Instance.Consumer<SubmitOrderConsumer>();
+
+            var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri($"queue:submit-order"));
+            await endpoint.Send<SubmitOrder>(new
+            {
+
+                OrderId = new Guid(),
+                TimeStapm = InVar.Timestamp,
+                CustomerNumber = customerNumber
+            });
+            return Accepted();
         }
     }
 }

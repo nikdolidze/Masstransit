@@ -22,27 +22,29 @@ namespace Sample.Components.Consumers
         {
             _logger.Log(LogLevel.Information, "SubmitCusotmerNumber : {CustomerNumber}", context.Message.CustomerNumber);
 
-           
-            if(context.Message.CustomerNumber.Contains("Test"))
-            {
-                await context.RespondAsync<OrderSubmitedRejected>(new
-                {
 
-                    OrderId = Guid.NewGuid(),
-                    TimeStamp =DateTime.Now,
-                    CustomerNumber = context.Message.CustomerNumber,
-                    Reason = "Unknown"
-                });
+            if (context.Message.CustomerNumber.Contains("Test"))
+            {
+                if (context.RequestId != null)
+                    await context.RespondAsync<OrderSubmitedRejected>(new
+                    {
+
+                        OrderId = Guid.NewGuid(),
+                        TimeStamp = DateTime.Now,
+                        CustomerNumber = context.Message.CustomerNumber,
+                        Reason = "Unknown"
+                    });
                 return;
             }
-            await context.RespondAsync<OrderSubmitionAccepted>(new
-            {
-              //  "3d3e0000-198b-14cb-54e7-08da2d290dca"
-                OrderId = new Guid(),
-                TimeStamp = InVar.Timestamp
-            });
+            if (context.RequestId != null)
+                await context.RespondAsync<OrderSubmitionAccepted>(new
+                {
+                    //  "3d3e0000-198b-14cb-54e7-08da2d290dca"
+                    OrderId = new Guid(),
+                    TimeStamp = InVar.Timestamp
+                });
         }
     }
 
-  
+
 }

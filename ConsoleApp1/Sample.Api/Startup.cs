@@ -10,6 +10,7 @@ using Sample.Contracts;
 using med = MassTransit.Mediator;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using MassTransit.Definition;
+using System;
 
 namespace Sample.Api
 {
@@ -40,8 +41,12 @@ namespace Sample.Api
             {
            //     cfg.AddConsumer<SubmitOrderConsumer>();
                 cfg.AddBus(provider => Bus.Factory.CreateUsingRabbitMq());
-                
-                cfg.AddRequestClient<SubmitOrder>();
+
+                var a = KebabCaseEndpointNameFormatter.Instance.Consumer<SubmitOrderConsumer>();
+               
+
+                cfg.AddRequestClient<SubmitOrder>(new Uri($"queue:" +
+                    $"{a}"));
             });
 
             services.AddMassTransitHostedService();
