@@ -8,6 +8,8 @@ using MassTransit;
 using Sample.Components.Consumers;
 using Sample.Contracts;
 using med = MassTransit.Mediator;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using MassTransit.Definition;
 
 namespace Sample.Api
 {
@@ -23,20 +25,29 @@ namespace Sample.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
 
 
-          
-            services.AddMediator(cfg =>
+
+            //services.AddMediator(cfg =>
+            //{
+            //    cfg.AddRequestClient<SubmitOrder>();
+
+            //    cfg.AddConsumer<SubmitOrderConsumer>();
+            //});
+            services.TryAddSingleton(KebabCaseEndpointNameFormatter.Instance);
+
+            services.AddMassTransit(cfg =>
             {
+           //     cfg.AddConsumer<SubmitOrderConsumer>();
+                cfg.AddBus(provider => Bus.Factory.CreateUsingRabbitMq());
+                
                 cfg.AddRequestClient<SubmitOrder>();
-
-                cfg.AddConsumer<SubmitOrderConsumer>();
             });
 
+            services.AddMassTransitHostedService();
 
 
-
+            services.AddControllers();
 
             services.AddSwaggerGen(c =>
             {
