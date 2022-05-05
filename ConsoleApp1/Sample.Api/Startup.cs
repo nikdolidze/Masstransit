@@ -12,6 +12,9 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using MassTransit.Definition;
 using GreenPipes;
 using System;
+using Sample.Components.StateMachines;
+using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 namespace Sample.Api
 {
@@ -38,19 +41,42 @@ namespace Sample.Api
             //});
             services.TryAddSingleton(KebabCaseEndpointNameFormatter.Instance);
 
+
+
+
+
             services.AddMassTransit(cfg =>
             {
                 cfg.AddRequestClient<SubmitOrder>(new Uri($"queue:" +
                     $"{ KebabCaseEndpointNameFormatter.Instance.Consumer<SubmitOrderConsumer>()}"));
 
 
-                //     cfg.AddConsumer<SubmitOrderConsumer>();
+                //cfg.AddSagaStateMachine<OrderStateMachine, OrderState>()
+                //            .EntityFrameworkRepository(r =>
+                //            {
+                //                //    r.ConcurrencyMode = ConcurrencyMode.Pessimistic; // or use Optimistic, which requires RowVersion
+
+                //                r.AddDbContext<DbContext, OrderStateDbContext>((provider, builder) =>
+                //              {
+
+
+                //                  builder.UseSqlServer("Server=NDOLIDZE-LP;Database=Saga;Trusted_Connection=True", m =>
+                //                  {
+                //                      m.MigrationsAssembly(Assembly.GetExecutingAssembly().GetName().Name);
+                //                      m.MigrationsHistoryTable($"__{nameof(OrderStateDbContext)}");
+                //                  });
+                //              });
+                //            });
+
+
+                cfg.AddConsumer<SubmitOrderConsumer>();
                 cfg.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(x =>
                 {
-                    x.UseMessageRetry(r => r.Immediate(100));
-                }));
+                    //     x.UseMessageRetry(r => r.Immediate(100));
+                    x.ConfigureEndpoints(provider);
+                 }));
 
-               
+
 
             });
 

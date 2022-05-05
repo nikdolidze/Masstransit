@@ -23,7 +23,7 @@ namespace Sample.Components.Consumers
             _logger.Log(LogLevel.Information, "SubmitCusotmerNumber : {CustomerNumber}", context.Message.CustomerNumber);
             Console.WriteLine("-----------------------------------");
 
-            throw new Exception();
+            //  throw new Exception();
 
             if (context.Message.CustomerNumber.Contains("Test"))
             {
@@ -38,12 +38,28 @@ namespace Sample.Components.Consumers
                     });
                 return;
             }
+            await context.Publish<OrderSubmitted>(new
+            {
+
+                //OrderId = default(Guid),
+                //TimeStap = default(DateTime),
+                //CustomerNumber = default(string)
+                context.Message.OrderId,
+                TimeStap=  context.Message.TimeStapm,
+                context.Message.CustomerNumber
+
+
+            });
             if (context.RequestId != null)
                 await context.RespondAsync<OrderSubmitionAccepted>(new
                 {
-                    //  "3d3e0000-198b-14cb-54e7-08da2d290dca"
-                    OrderId = new Guid(),
-                    TimeStamp = InVar.Timestamp
+                    InVar.Timestamp,
+                    context.Message.OrderId,
+                    context.Message.CustomerNumber
+
+                    //OrderId = default(Guid),
+                    //Timestamp = default(DateTime),
+                    //CustomerNumber = default(string)
                 });
         }
     }

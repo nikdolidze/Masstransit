@@ -13,6 +13,9 @@ using Serilog;
 using Serilog.Events;
 using GreenPipes;
 using MassTransit.Definition;
+using Sample.Components.StateMachines;
+using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 namespace Sample.Service
 {
@@ -45,6 +48,26 @@ namespace Sample.Service
                     services.AddMassTransit(cfg =>
                     {
                         cfg.AddConsumersFromNamespaceContaining<SubmitOrderConsumer>();
+
+                        cfg.AddSagaStateMachine<OrderStateMachine, OrderState>()
+                              .EntityFrameworkRepository(r =>
+                              {
+                                  //    r.ConcurrencyMode = ConcurrencyMode.Pessimistic; // or use Optimistic, which requires RowVersion
+
+                                  r.AddDbContext<DbContext, OrderStateDbContext>((provider, builder) =>
+                                 {
+
+
+                                     builder.UseSqlServer("Server=NDOLIDZE-LP;Database=Saga;Trusted_Connection=True", m =>
+                                    {
+                                        m.MigrationsAssembly(Assembly.GetExecutingAssembly().GetName().Name);
+                                        m.MigrationsHistoryTable($"__{nameof(OrderStateDbContext)}");
+                                    });
+                                 });
+                              });
+
+
+
                         cfg.AddBus(ConfigureBus);
                     });
 
@@ -66,7 +89,7 @@ namespace Sample.Service
             return Bus.Factory.CreateUsingRabbitMq(cfg =>
             {
                 cfg.ConfigureEndpoints(context);
-                cfg.UseMessageRetry(t => t.Immediate(50));
+              //  cfg.UseMessageRetry(t => t.Immediate(50));
             });
         }
 

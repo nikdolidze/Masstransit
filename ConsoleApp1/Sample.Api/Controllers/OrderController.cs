@@ -35,7 +35,7 @@ namespace Sample.Api.Controllers
                 await _submitOrderRequestClient.GetResponse<OrderSubmitionAccepted,OrderSubmitedRejected>(new
             {
 
-                OrderId = new Guid(),
+                OrderId = Guid.NewGuid(),
                 TimeStapm = InVar.Timestamp,
                 CustomerNumber = customerNumber
             });
@@ -61,7 +61,7 @@ namespace Sample.Api.Controllers
             await endpoint.Send<SubmitOrder>(new
             {
 
-                OrderId = new Guid(),
+                OrderId = new Guid().ToNewId(),
                 TimeStapm = InVar.Timestamp,
                 CustomerNumber = customerNumber
             });
