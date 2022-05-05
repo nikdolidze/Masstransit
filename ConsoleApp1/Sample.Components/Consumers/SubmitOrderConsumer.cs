@@ -36,6 +36,14 @@ namespace Sample.Components.Consumers
                         CustomerNumber = context.Message.CustomerNumber,
                         Reason = "Unknown"
                     });
+                await context.Publish<OrderRejected>(new
+                {
+                    context.Message.OrderId,
+                    TimeStap = context.Message.TimeStapm,
+                    context.Message.CustomerNumber
+
+
+                });
                 return;
             }
             await context.Publish<OrderSubmitted>(new

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Sample.Components.StateMachines;
 
 namespace Sample.Api.Migrations
 {
     [DbContext(typeof(OrderStateDbContext))]
-    partial class OrderStateDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220505115009_saga2")]
+    partial class saga2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -15,30 +15,56 @@ namespace Sample.Api.Controllers
     [Route("[controller]")]
     public class OrderController : ControllerBase
     {
-       
+
 
         private readonly ILogger<OrderController> _logger;
         readonly IRequestClient<SubmitOrder> _submitOrderRequestClient;
         private readonly ISendEndpointProvider _sendEndpointProvider;
+        private readonly IRequestClient<CheckOrder> _checkOrderClient;
 
-        public OrderController(ILogger<OrderController> logger, IRequestClient<SubmitOrder> submitOrderRequestClient,ISendEndpointProvider sendEndpointProvider)
+        public OrderController(ILogger<OrderController> logger, IRequestClient<SubmitOrder> submitOrderRequestClient, ISendEndpointProvider sendEndpointProvider
+            , IRequestClient<CheckOrder> checkOrder)
         {
             _logger = logger;
             _submitOrderRequestClient = submitOrderRequestClient;
             _sendEndpointProvider = sendEndpointProvider;
+            _checkOrderClient = checkOrder;
         }
+
+
+        [HttpGet]
+        public async Task<IActionResult> Get(Guid id)
+        {
+            var (status, notFount) = await _checkOrderClient.GetResponse<OrderStatus, OrderNotFound>(new
+            {
+                OrderId = id
+            });
+
+            if (status.IsCompletedSuccessfully)
+            {
+                var reposne = await status;
+                return Ok(reposne.Message);
+            }
+
+         var response =    await notFount;
+
+
+            return NotFound(response.Message) ;
+        }
+
+
 
         [HttpPost]
         public async Task<IActionResult> Post(string customerNumber)
         {
-           var (excepdet, rejected) = 
-                await _submitOrderRequestClient.GetResponse<OrderSubmitionAccepted,OrderSubmitedRejected>(new
-            {
+            var (excepdet, rejected) =
+                 await _submitOrderRequestClient.GetResponse<OrderSubmitionAccepted, OrderSubmitedRejected>(new
+                 {
 
-                OrderId = Guid.NewGuid(),
-                TimeStapm = InVar.Timestamp,
-                CustomerNumber = customerNumber
-            });
+                     OrderId = Guid.NewGuid(),
+                     TimeStapm = InVar.Timestamp,
+                     CustomerNumber = customerNumber
+                 });
             if (excepdet.IsCompletedSuccessfully)
             {
                 var response = await excepdet;

@@ -6,19 +6,13 @@ using System.Threading.Tasks;
 
 namespace Sample.Contracts
 {
-    public interface OrderSubmitted
+    public interface CheckOrder
     {
         Guid OrderId { get; }
-        DateTime TimeStap { get; }
-        string CustomerNumber { get; }
 
     }
-
-    public interface OrderRejected
+    public interface OrderNotFound
     {
         Guid OrderId { get; }
-        DateTime TimeStap { get; }
-        string CustomerNumber { get; }
-
     }
 }

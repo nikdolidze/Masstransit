@@ -50,11 +50,12 @@ namespace Sample.Api
                 cfg.AddRequestClient<SubmitOrder>(new Uri($"queue:" +
                     $"{ KebabCaseEndpointNameFormatter.Instance.Consumer<SubmitOrderConsumer>()}"));
 
+                cfg.AddRequestClient<CheckOrder>();
 
                 //cfg.AddSagaStateMachine<OrderStateMachine, OrderState>()
                 //            .EntityFrameworkRepository(r =>
                 //            {
-                //                //    r.ConcurrencyMode = ConcurrencyMode.Pessimistic; // or use Optimistic, which requires RowVersion
+                //                r.ConcurrencyMode = ConcurrencyMode.Pessimistic; // or use Optimistic, which requires RowVersion
 
                 //                r.AddDbContext<DbContext, OrderStateDbContext>((provider, builder) =>
                 //              {
