@@ -71,6 +71,4 @@ namespace Sample.Components.Consumers
                 });
         }
     }
-
-
 }

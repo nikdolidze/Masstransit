@@ -70,7 +70,7 @@ namespace Sample.Api
                 //            });
 
 
-                cfg.AddConsumer<SubmitOrderConsumer>();
+            //    cfg.AddConsumer<SubmitOrderConsumer>();
                 cfg.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(x =>
                 {
                     //     x.UseMessageRetry(r => r.Immediate(100));

@@ -47,9 +47,9 @@ namespace Sample.Service
                     services.TryAddSingleton(KebabCaseEndpointNameFormatter.Instance);
                     services.AddMassTransit(cfg =>
                     {
-                        cfg.AddConsumersFromNamespaceContaining<SubmitOrderConsumer>();
+                        cfg.AddConsumer<SubmitOrderConsumer>(typeof(SubmitOrderConsumerDefinition));
 
-                        cfg.AddSagaStateMachine<OrderStateMachine, OrderState>()
+                        cfg.AddSagaStateMachine<OrderStateMachine, OrderState>(typeof(OrderStateMachineDefinition))
                               .EntityFrameworkRepository(r =>
                               {
                                   //    r.ConcurrencyMode = ConcurrencyMode.Pessimistic; // or use Optimistic, which requires RowVersion
@@ -89,7 +89,12 @@ namespace Sample.Service
             return Bus.Factory.CreateUsingRabbitMq(cfg =>
             {
                 cfg.ConfigureEndpoints(context);
-              //  cfg.UseMessageRetry(t => t.Immediate(50));
+                //cfg.ReceiveEndpoint("submit-order", e =>
+                //{
+
+                //});
+               
+                //  cfg.UseMessageRetry(t => t.Immediate(50));
             });
         }
 
