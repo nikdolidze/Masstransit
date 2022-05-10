@@ -5,6 +5,7 @@ using MassTransit.EntityFrameworkCoreIntegration.Mappings;
 using MassTransit.Saga;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Sample.Components.StateMachines.OrderStateMachineActivities;
 using Sample.Contracts;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,7 @@ namespace Sample.Components.StateMachines
         public OrderStateMachine()
         {
             Event(() => OrderSubmitted, x => x.CorrelateById(m => m.Message.OrderId));
+            Event(()=> OrderAccepted, x => x.CorrelateById(m => m.Message.OrderId));
             Event(() => OrderRejected, x => x.CorrelateById(m => m.Message.OrderId));
             Event(() => OrderStatusRequested, x =>
             {
@@ -28,6 +30,9 @@ namespace Sample.Components.StateMachines
                     }
                 }));
             });
+
+            Event(()=>AccountClosed,x=>x.CorrelateBy((saga,context)=>saga.CustomerNumber == context.Message.CustomerNumber));
+
             InstanceState(x => x.CurrentState);
             Initially(
                 When(OrderSubmitted)
@@ -48,7 +53,13 @@ namespace Sample.Components.StateMachines
                         context.Instance.Updated = DateTime.UtcNow;
                     })
                  .TransitionTo(Rejected));
-            During(Submeted, Ignore(OrderSubmitted));
+
+            During(Submeted, Ignore(OrderSubmitted)
+                , When(AccountClosed)
+                    .TransitionTo(Cancelded),
+                    When(OrderAccepted)
+                        .Activity(x=> x.OfType<AcceptOrderActivity>()).
+                            TransitionTo(Accepted));
 
 
             DuringAny(
@@ -70,12 +81,15 @@ namespace Sample.Components.StateMachines
                     State = x.Instance.CurrentState
                 })));
         }
-
+        public State Cancelded { get; private set; }
+        public State Accepted { get;private set; }
         public State Rejected { get; private set; }
         public State Submeted { get; private set; }
         public Event<OrderSubmitted> OrderSubmitted { get; private set; }
+        public Event<OrderAccepted> OrderAccepted { get; private set; }
         public Event<OrderRejected> OrderRejected { get; private set; }
         public Event<CheckOrder> OrderStatusRequested { get; private set; }
+       public Event<CustomerAccountClosed> AccountClosed { get; private set; } 
 
     }
 
