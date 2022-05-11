@@ -16,6 +16,9 @@ using MassTransit.Definition;
 using Sample.Components.StateMachines;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
+using Sample.Components.CurrierActivities;
+using Sample.Components.StateMachines.OrderStateMachineActivities;
+using Warehouse.Contracts;
 
 namespace Sample.Service
 {
@@ -27,7 +30,7 @@ namespace Sample.Service
             var isService = !(Debugger.IsAttached || args.Contains("--console"));
 
             Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Debug()
+                .MinimumLevel.Information()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
                 .Enrich.FromLogContext()
                 .WriteTo.Console()
@@ -44,10 +47,12 @@ namespace Sample.Service
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
+                    services.AddScoped<AcceptOrderActivity>();
                     services.TryAddSingleton(KebabCaseEndpointNameFormatter.Instance);
                     services.AddMassTransit(cfg =>
                     {
-                        cfg.AddConsumer<SubmitOrderConsumer>(typeof(SubmitOrderConsumerDefinition));
+                        cfg.AddConsumersFromNamespaceContaining<SubmitOrderConsumer>();//(typeof(SubmitOrderConsumerDefinition));
+                        cfg.AddActivitiesFromNamespaceContaining<AllocateInventoryActivity>();
 
                         cfg.AddSagaStateMachine<OrderStateMachine, OrderState>(typeof(OrderStateMachineDefinition))
                               .EntityFrameworkRepository(r =>
@@ -69,15 +74,16 @@ namespace Sample.Service
 
 
                         cfg.AddBus(ConfigureBus);
+                        cfg.AddRequestClient<AllocateInventory>();
                     });
 
                     services.AddHostedService<MassTransitConsoleHostedService>();
                 })
-                .ConfigureLogging((hostingContext, logging) =>
-                {
-                    logging.AddSerilog(dispose: true);
-                    logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
-                });
+                  .ConfigureLogging((hostingContext, logging) =>
+                  {
+                      logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
+                      logging.AddConsole();
+                  });
             if (isService)
                 await builder.UseWindowsService().Build().RunAsync();
             else

@@ -1,5 +1,6 @@
 ﻿using Automatonymous;
 using GreenPipes;
+using MassTransit;
 using Sample.Contracts;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,13 @@ namespace Sample.Components.StateMachines.OrderStateMachineActivities
         {
             Console.WriteLine("Hello world. Order is ----------------------------------{0}",context.Data.OrderId);
 
+            var consumerContext = context.GetPayload<ConsumeContext>();
+            var sendEdnpont = await consumerContext.GetSendEndpoint(new Uri("Exchange:fulfil-order"));
+            await sendEdnpont.Send<FulfilOrder>(new
+            {
+
+                OrderId = context.Data.OrderId,
+            });
             // do something later
            await next.Execute(context).ConfigureAwait(false); 
         }

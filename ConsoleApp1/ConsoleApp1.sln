@@ -3,13 +3,21 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32228.430
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.Api", "Sample.Api\Sample.Api.csproj", "{277CFD9B-E305-40E5-84C6-884407359370}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.Api", "Sample.Api\Sample.Api.csproj", "{277CFD9B-E305-40E5-84C6-884407359370}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.Contracts", "Sample.Contracts\Sample.Contracts.csproj", "{6D821194-ECA0-468F-B210-170BB724F4FC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.Contracts", "Sample.Contracts\Sample.Contracts.csproj", "{6D821194-ECA0-468F-B210-170BB724F4FC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.Components", "Sample.Components\Sample.Components.csproj", "{21D78B7D-0156-4D90-BF4D-45319156C839}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.Components", "Sample.Components\Sample.Components.csproj", "{21D78B7D-0156-4D90-BF4D-45319156C839}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.Service", "Sample.Service\Sample.Service.csproj", "{45BEC351-7F6B-41F4-8BA8-0FC27553E221}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.Service", "Sample.Service\Sample.Service.csproj", "{45BEC351-7F6B-41F4-8BA8-0FC27553E221}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WareHouse", "WareHouse", "{DB7A8E90-6A22-4507-8200-AD16633E5982}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Warehouse.Contracts", "Warehouse.Contracts\Warehouse.Contracts.csproj", "{7E4AE801-6DBD-4F66-912E-A015097B2D83}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Warehouse.Service", "Warehouse.Service\Warehouse.Service.csproj", "{E3D54AD0-78D9-4C9F-AF63-32122C7044FB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Warehouse.Components", "Warehouse.Components\Warehouse.Components.csproj", "{0D236B2C-B563-405D-B02D-AC1FD2C4FD89}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,9 +41,26 @@ Global
 		{45BEC351-7F6B-41F4-8BA8-0FC27553E221}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{45BEC351-7F6B-41F4-8BA8-0FC27553E221}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{45BEC351-7F6B-41F4-8BA8-0FC27553E221}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E4AE801-6DBD-4F66-912E-A015097B2D83}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E4AE801-6DBD-4F66-912E-A015097B2D83}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E4AE801-6DBD-4F66-912E-A015097B2D83}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E4AE801-6DBD-4F66-912E-A015097B2D83}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3D54AD0-78D9-4C9F-AF63-32122C7044FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3D54AD0-78D9-4C9F-AF63-32122C7044FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3D54AD0-78D9-4C9F-AF63-32122C7044FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3D54AD0-78D9-4C9F-AF63-32122C7044FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D236B2C-B563-405D-B02D-AC1FD2C4FD89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D236B2C-B563-405D-B02D-AC1FD2C4FD89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D236B2C-B563-405D-B02D-AC1FD2C4FD89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D236B2C-B563-405D-B02D-AC1FD2C4FD89}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7E4AE801-6DBD-4F66-912E-A015097B2D83} = {DB7A8E90-6A22-4507-8200-AD16633E5982}
+		{E3D54AD0-78D9-4C9F-AF63-32122C7044FB} = {DB7A8E90-6A22-4507-8200-AD16633E5982}
+		{0D236B2C-B563-405D-B02D-AC1FD2C4FD89} = {DB7A8E90-6A22-4507-8200-AD16633E5982}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {12799027-2B9B-4300-A510-82CDB5BD12A2}

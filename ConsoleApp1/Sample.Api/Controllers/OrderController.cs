@@ -21,14 +21,16 @@ namespace Sample.Api.Controllers
         readonly IRequestClient<SubmitOrder> _submitOrderRequestClient;
         private readonly ISendEndpointProvider _sendEndpointProvider;
         private readonly IRequestClient<CheckOrder> _checkOrderClient;
+        private readonly IPublishEndpoint _publish;
 
         public OrderController(ILogger<OrderController> logger, IRequestClient<SubmitOrder> submitOrderRequestClient, ISendEndpointProvider sendEndpointProvider
-            , IRequestClient<CheckOrder> checkOrder)
+            , IRequestClient<CheckOrder> checkOrder,IPublishEndpoint publish)
         {
             _logger = logger;
             _submitOrderRequestClient = submitOrderRequestClient;
             _sendEndpointProvider = sendEndpointProvider;
             _checkOrderClient = checkOrder;
+            _publish = publish;
         }
 
 
@@ -77,6 +79,23 @@ namespace Sample.Api.Controllers
             }
 
         }
+
+
+        [HttpPatch]
+        public async Task<IActionResult> HttpPatch(Guid id)
+        {
+
+            await _publish.Publish<OrderAccepted>(new
+            {
+
+                OrderId = id,
+                TimeStap = InVar.Timestamp,
+
+            });
+            return Accepted();
+        }
+
+
 
         [HttpPut]
         public async Task<IActionResult> Put(string customerNumber)
