@@ -10,8 +10,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using MassTransit.Definition;
 using Microsoft.EntityFrameworkCore;
-using Warehouse.Components;
 using Warehouse.Service;
+using Warehouse.Components.Consumers;
+using Warehouse.Components.StateMachines;
+using System.Reflection;
 
 namespace Sample.Service
 {
@@ -44,6 +46,22 @@ namespace Sample.Service
                     services.AddMassTransit(cfg =>
                     {
                         cfg.AddConsumersFromNamespaceContaining<AllocateInventoryConsumer>();
+                        cfg.AddSagaStateMachine<AllocationStateMachine,AllocationState>().EntityFrameworkRepository(r =>
+                        {
+                            //    r.ConcurrencyMode = ConcurrencyMode.Pessimistic; // or use Optimistic, which requires RowVersion
+
+                            r.AddDbContext<DbContext, AllocationStateDbContext>((provider, builder) =>
+                            {
+
+
+                                builder.UseSqlServer("Server=NDOLIDZE-LP;Database=Saga2;Trusted_Connection=True", m =>
+                                {
+                                    m.MigrationsAssembly(Assembly.GetExecutingAssembly().GetName().Name);
+                                    m.MigrationsHistoryTable($"__{nameof(AllocationStateDbContext)}");
+                                });
+                            });
+                        });
+
 
                         cfg.AddBus(ConfigureBus);
                     });
@@ -65,7 +83,11 @@ namespace Sample.Service
         {
             return Bus.Factory.CreateUsingRabbitMq(cfg =>
             {
+                cfg.UseMessageScheduler(new Uri("queue:quartz-scheduler"));
+
+
                 cfg.ConfigureEndpoints(context);
+
                 //cfg.ReceiveEndpoint("submit-order", e =>
                 //{
 

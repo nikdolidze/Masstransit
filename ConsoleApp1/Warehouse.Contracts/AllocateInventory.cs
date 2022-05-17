@@ -9,11 +9,4 @@ namespace Warehouse.Contracts
         decimal Quantity { get; }
 
     } 
-
-    public interface AllocationReasonRequested
-    {
-        Guid AllocationId { get; }
-        string Reason { get; }
-
-    }
 }
