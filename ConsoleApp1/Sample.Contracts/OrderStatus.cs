@@ -8,4 +8,10 @@ namespace Sample.Contracts
         string CustomerNumber { get; }
         string State { get; }
     }
+
+    public interface OrderFulfilmentFaulted
+    {
+         Guid OrderId { get; }
+         DateTime TimeStamp { get; }    
+    }
 }

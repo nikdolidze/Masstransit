@@ -2,7 +2,7 @@
 
 namespace Warehouse.Contracts
 {
-    public interface AllocationReasonRequested
+    public interface AllocationReleaseRequested
     {
         Guid AllocationId { get; }
         string Reason { get; }

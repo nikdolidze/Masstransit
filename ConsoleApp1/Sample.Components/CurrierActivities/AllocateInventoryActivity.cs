@@ -20,7 +20,7 @@ namespace Sample.Components.CurrierActivities
 
         public async Task<CompensationResult> Compensate(CompensateContext<AllocateInventoryLog> context)
         {
-            await context.Publish<AllocationReasonRequested>(new
+            await context.Publish<AllocationReleaseRequested>(new
             {
 
                 AllocationId = context.Log.AllocationId,

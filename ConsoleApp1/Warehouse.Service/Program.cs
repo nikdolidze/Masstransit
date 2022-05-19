@@ -46,7 +46,8 @@ namespace Sample.Service
                     services.AddMassTransit(cfg =>
                     {
                         cfg.AddConsumersFromNamespaceContaining<AllocateInventoryConsumer>();
-                        cfg.AddSagaStateMachine<AllocationStateMachine,AllocationState>().EntityFrameworkRepository(r =>
+                        cfg.AddSagaStateMachine<AllocationStateMachine,AllocationState>(typeof(AllocateStateMachineDefinition))
+                        .EntityFrameworkRepository(r =>
                         {
                             //    r.ConcurrencyMode = ConcurrencyMode.Pessimistic; // or use Optimistic, which requires RowVersion
 

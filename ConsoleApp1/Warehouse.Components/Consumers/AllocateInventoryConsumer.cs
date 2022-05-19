@@ -9,13 +9,13 @@ namespace Warehouse.Components.Consumers
     {
         public async Task Consume(ConsumeContext<AllocateInventory> context)
         {
-            await Task.Delay(5000);
+            await Task.Delay(5);
 
             await context.Publish<AllocatoinCreated>(new
             {
 
                 AllocationId = context.Message.AllocationId,
-                HolDuration = 8000,
+                HolDuration = 5000,
             }) ;
 
             await context.RespondAsync<InventoryAllocated>(new
