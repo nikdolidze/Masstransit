@@ -9,10 +9,11 @@ namespace Sample.Components.StateMachines
         public string CurrentState { get; set; }
         public string CustomerNumber { get; set; }
 
-    //    public string FauldReason { get; set; }
+            public string FauldReason { get; set; }
+        public string PaymentCartNumber { get; set; }
+
         public DateTime? SubmitDate { get; set; }
         public DateTime? Updated { get; set; }
-
     }
 
 

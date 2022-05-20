@@ -24,17 +24,31 @@ namespace Sample.Components.Consumers
             builder.AddActivity("PaymentActivity", new Uri("queue:payment_execute"), new
             {
                 Amount = 99.95,
-                CardNumber = "5f999"
+                CardNumber = context.Message.PaymentCardNumber ?? "5999"
             });
 
             builder.AddVariable("OrderId", context.Message.OrderId);
 
-          await  builder.AddSubscription(context.SourceAddress, MassTransit.Courier.Contracts.RoutingSlipEvents.Faulted, MassTransit.Courier.Contracts.RoutingSlipEventContents.None,
-                x => x.Send<OrderFulfilmentFaulted>(new
-                {
+            await builder.AddSubscription(context.SourceAddress,
+                   MassTransit.Courier.Contracts.RoutingSlipEvents.Faulted
+                  | MassTransit.Courier.Contracts.RoutingSlipEvents.Supplemental,
+                   MassTransit.Courier.Contracts.RoutingSlipEventContents.None,
+                   x => x.Send<OrderFulfilmentFaulted>(new
+                   {
 
-                    OrderId = context.Message.OrderId
-                }));
+                       OrderId = context.Message.OrderId
+                   }));
+
+
+            await builder.AddSubscription(context.SourceAddress, 
+                  MassTransit.Courier.Contracts.RoutingSlipEvents.Completed
+                 | MassTransit.Courier.Contracts.RoutingSlipEvents.Supplemental,
+                  MassTransit.Courier.Contracts.RoutingSlipEventContents.None,
+                  x => x.Send<OrderFulfilmentCompleted>(new
+                  {
+
+                      OrderId = context.Message.OrderId
+                  }));
 
             var routingSlip = builder.Build();
             await context.Execute(routingSlip);

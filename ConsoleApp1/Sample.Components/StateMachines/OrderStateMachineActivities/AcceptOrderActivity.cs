@@ -28,7 +28,9 @@ namespace Sample.Components.StateMachines.OrderStateMachineActivities
             {
 
                 OrderId = context.Data.OrderId,
-            });
+                PaymentCardNumber = context.Instance.PaymentCartNumber,
+                CustomerNumber = context.Instance.CustomerNumber
+            }) ;
             // do something later
            await next.Execute(context).ConfigureAwait(false); 
         }

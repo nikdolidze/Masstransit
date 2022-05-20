@@ -57,7 +57,7 @@ namespace Sample.Api.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> Post(string customerNumber)
+        public async Task<IActionResult> Post(string customerNumber,string paymentCardNumber)
         {
             var (excepdet, rejected) =
                  await _submitOrderRequestClient.GetResponse<OrderSubmitionAccepted, OrderSubmitedRejected>(new
@@ -65,7 +65,8 @@ namespace Sample.Api.Controllers
 
                      OrderId = Guid.NewGuid(),
                      TimeStapm = InVar.Timestamp,
-                     CustomerNumber = customerNumber
+                     CustomerNumber = customerNumber,
+                     PaymentCardNumber =paymentCardNumber
                  });
             if (excepdet.IsCompletedSuccessfully)
             {

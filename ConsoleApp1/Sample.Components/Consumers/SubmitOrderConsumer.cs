@@ -39,7 +39,7 @@ namespace Sample.Components.Consumers
                 await context.Publish<OrderRejected>(new
                 {
                     context.Message.OrderId,
-                    TimeStap = context.Message.TimeStapm,
+                    TimeStap = context.Message.TimeStapm, 
                     context.Message.CustomerNumber
 
 
@@ -48,15 +48,10 @@ namespace Sample.Components.Consumers
             }
             await context.Publish<OrderSubmitted>(new
             {
-
-                //OrderId = default(Guid),
-                //TimeStap = default(DateTime),
-                //CustomerNumber = default(string)
                 context.Message.OrderId,
-                TimeStap=  context.Message.TimeStapm,
-                context.Message.CustomerNumber
-
-
+                TimeStap = context.Message.TimeStapm,
+                context.Message.CustomerNumber,
+                context.Message.PaymentCardNumber
             });
             if (context.RequestId != null)
                 await context.RespondAsync<OrderSubmitionAccepted>(new

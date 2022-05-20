@@ -14,4 +14,9 @@ namespace Sample.Contracts
          Guid OrderId { get; }
          DateTime TimeStamp { get; }    
     }
+    public interface OrderFulfilmentCompleted
+    {
+        Guid OrderId { get; }
+        DateTime TimeStamp { get; }
+    }
 }

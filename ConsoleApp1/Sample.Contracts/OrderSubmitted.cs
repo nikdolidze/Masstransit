@@ -11,5 +11,6 @@ namespace Sample.Contracts
         Guid OrderId { get; }
         DateTime TimeStap { get; }
         string CustomerNumber { get; }
+        string PaymentCardNumber { get; }
     }
 }

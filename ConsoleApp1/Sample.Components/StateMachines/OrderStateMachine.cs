@@ -17,9 +17,10 @@ namespace Sample.Components.StateMachines
         public OrderStateMachine()
         {
             Event(() => OrderSubmitted, x => x.CorrelateById(m => m.Message.OrderId));
-            Event(()=> OrderAccepted, x => x.CorrelateById(m => m.Message.OrderId));
+            Event(() => OrderAccepted, x => x.CorrelateById(m => m.Message.OrderId));
             Event(() => OrderRejected, x => x.CorrelateById(m => m.Message.OrderId));
             Event(() => FulfilmentFaulted, x => x.CorrelateById(m => m.Message.OrderId));
+            Event(() => FulfilmentCompleted, x => x.CorrelateById(m => m.Message.OrderId));
             Event(() => OrderStatusRequested, x =>
             {
                 x.CorrelateById(m => m.Message.OrderId);
@@ -32,7 +33,7 @@ namespace Sample.Components.StateMachines
                 }));
             });
 
-            Event(()=>AccountClosed,x=>x.CorrelateBy((saga,context)=>saga.CustomerNumber == context.Message.CustomerNumber));
+            Event(() => AccountClosed, x => x.CorrelateBy((saga, context) => saga.CustomerNumber == context.Message.CustomerNumber));
 
             InstanceState(x => x.CurrentState);
             Initially(
@@ -42,6 +43,7 @@ namespace Sample.Components.StateMachines
                         context.Instance.SubmitDate = context.Data.TimeStap;
                         context.Instance.CustomerNumber = context.Data.CustomerNumber;
                         context.Instance.Updated = DateTime.UtcNow;
+                        context.Instance.PaymentCartNumber = context.Data.PaymentCardNumber;
                     })
                  .TransitionTo(Submeted));
 
@@ -59,13 +61,14 @@ namespace Sample.Components.StateMachines
                 , When(AccountClosed)
                     .TransitionTo(Cancelded),
                     When(OrderAccepted)
-                        .Activity(x=> x.OfType<AcceptOrderActivity>()).
+                        .Activity(x => x.OfType<AcceptOrderActivity>()).
                             TransitionTo(Accepted));
 
             During(Accepted,
                 When(FulfilmentFaulted)
-                
-                .TransitionTo(Faulted));     
+                .TransitionTo(Faulted)
+                ,When(FulfilmentCompleted)
+                .TransitionTo(Completed));
 
 
             DuringAny(
@@ -87,8 +90,9 @@ namespace Sample.Components.StateMachines
                     State = x.Instance.CurrentState
                 })));
         }
+        public State Completed { get; private set; }
         public State Cancelded { get; private set; }
-        public State Accepted { get;private set; }
+        public State Accepted { get; private set; }
         public State Rejected { get; private set; }
         public State Submeted { get; private set; }
         public State Faulted { get; private set; }
@@ -96,8 +100,10 @@ namespace Sample.Components.StateMachines
         public Event<OrderAccepted> OrderAccepted { get; private set; }
         public Event<OrderRejected> OrderRejected { get; private set; }
         public Event<CheckOrder> OrderStatusRequested { get; private set; }
-       public Event<CustomerAccountClosed> AccountClosed { get; private set; } 
+        public Event<CustomerAccountClosed> AccountClosed { get; private set; }
         public Event<OrderFulfilmentFaulted> FulfilmentFaulted { get; private set; }
+        public Event<OrderFulfilmentCompleted> FulfilmentCompleted { get; private set; }
+
 
     }
 
