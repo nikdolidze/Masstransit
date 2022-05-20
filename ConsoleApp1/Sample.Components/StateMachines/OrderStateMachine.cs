@@ -9,6 +9,7 @@ using Sample.Components.StateMachines.OrderStateMachineActivities;
 using Sample.Contracts;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Sample.Components.StateMachines
 {
@@ -21,6 +22,7 @@ namespace Sample.Components.StateMachines
             Event(() => OrderRejected, x => x.CorrelateById(m => m.Message.OrderId));
             Event(() => FulfilmentFaulted, x => x.CorrelateById(m => m.Message.OrderId));
             Event(() => FulfilmentCompleted, x => x.CorrelateById(m => m.Message.OrderId));
+            Event(() => FulfilOrderFaulted, x => x.CorrelateById(m => m.Message.Message.OrderId));
             Event(() => OrderStatusRequested, x =>
             {
                 x.CorrelateById(m => m.Message.OrderId);
@@ -65,10 +67,13 @@ namespace Sample.Components.StateMachines
                             TransitionTo(Accepted));
 
             During(Accepted,
+                When(FulfilOrderFaulted)
+                .Then(context => Console.Write("Fulful order faulted : {0}", context.Data.Exceptions.FirstOrDefault()?.Message))
+                    .TransitionTo(Faulted),
                 When(FulfilmentFaulted)
-                .TransitionTo(Faulted)
-                ,When(FulfilmentCompleted)
-                .TransitionTo(Completed));
+                 .TransitionTo(Faulted),
+                When(FulfilmentCompleted)
+                .TransitionTo(Completed)) ;
 
 
             DuringAny(
@@ -103,6 +108,7 @@ namespace Sample.Components.StateMachines
         public Event<CustomerAccountClosed> AccountClosed { get; private set; }
         public Event<OrderFulfilmentFaulted> FulfilmentFaulted { get; private set; }
         public Event<OrderFulfilmentCompleted> FulfilmentCompleted { get; private set; }
+        public Event<Fault<FulfilOrder>> FulfilOrderFaulted { get; private set; }
 
 
     }

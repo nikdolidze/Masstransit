@@ -1,5 +1,8 @@
-﻿using MassTransit;
+﻿using GreenPipes;
+using MassTransit;
+using MassTransit.ConsumeConfigurators;
 using MassTransit.Courier;
+using MassTransit.Definition;
 using Sample.Contracts;
 using System;
 using System.Collections.Generic;
@@ -9,10 +12,32 @@ using System.Threading.Tasks;
 
 namespace Sample.Components.Consumers
 {
+    public class FulfilOrderDefinition : ConsumerDefinition<FulfilOrderConsumer>
+    {
+        public FulfilOrderDefinition()
+        {
+            ConcurrentMessageLimit = 4;
+        }
+        protected override void ConfigureConsumer(IReceiveEndpointConfigurator endpointConfigurator, IConsumerConfigurator<FulfilOrderConsumer> consumerConfigurator)
+        {
+            endpointConfigurator.UseMessageRetry(r =>
+            {
+                r.Ignore<InvalidOperationException>();
+                r.Intervals(3, 100);
+            });
+            endpointConfigurator.DiscardFaultedMessages();
+        }
+
+    }
     public class FulfilOrderConsumer : IConsumer<FulfilOrder>
     {
         public async Task Consume(ConsumeContext<FulfilOrder> context)
         {
+            if (context.Message.CustomerNumber.StartsWith("INVALID"))
+            {
+                throw new InvalidOperationException("We tried, but the customer  is invalid");
+            }
+         
             var builder = new RoutingSlipBuilder(NewId.NextGuid());
 
             builder.AddActivity("AllocateInventory", new Uri("queue:allocate-inventory_execute"), new
@@ -40,7 +65,7 @@ namespace Sample.Components.Consumers
                    }));
 
 
-            await builder.AddSubscription(context.SourceAddress, 
+            await builder.AddSubscription(context.SourceAddress,
                   MassTransit.Courier.Contracts.RoutingSlipEvents.Completed
                  | MassTransit.Courier.Contracts.RoutingSlipEvents.Supplemental,
                   MassTransit.Courier.Contracts.RoutingSlipEventContents.None,
