@@ -15,6 +15,7 @@ using System;
 using Sample.Components.StateMachines;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
+using MassTransit.MessageData;
 
 namespace Sample.Api
 {
@@ -73,6 +74,9 @@ namespace Sample.Api
             //    cfg.AddConsumer<SubmitOrderConsumer>();
                 cfg.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(x =>
                 {
+                    MessageDataDefaults.ExtraTimeToLive = TimeSpan.FromDays(1);
+                    MessageDataDefaults.TimeToLive = TimeSpan.FromDays(7);
+                    x.UseMessageData(new FileSystemMessageDataRepository(new System.IO.DirectoryInfo(@"C:\Users\n.dolidze\Desktop\consoleapp")));
                     //     x.UseMessageRetry(r => r.Immediate(100));
                     x.ConfigureEndpoints(provider);
                  }));

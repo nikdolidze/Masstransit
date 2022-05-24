@@ -19,6 +19,7 @@ using System.Reflection;
 using Sample.Components.CurrierActivities;
 using Sample.Components.StateMachines.OrderStateMachineActivities;
 using Warehouse.Contracts;
+using MassTransit.MessageData;
 
 namespace Sample.Service
 {
@@ -94,6 +95,7 @@ namespace Sample.Service
         {
             return Bus.Factory.CreateUsingRabbitMq(cfg =>
             {
+                cfg.UseMessageData(new FileSystemMessageDataRepository(new System.IO.DirectoryInfo(@"C:\Users\n.dolidze\Desktop\consoleapp")));
                 cfg.ConfigureEndpoints(context);
                 //cfg.ReceiveEndpoint("submit-order", e =>
                 //{

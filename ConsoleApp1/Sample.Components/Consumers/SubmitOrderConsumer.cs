@@ -46,12 +46,20 @@ namespace Sample.Components.Consumers
                 });
                 return;
             }
+
+            var notes = context.Message.Notes;
+            if(notes.HasValue)
+            {   
+                string notesValue = await notes.Value;
+                Console.WriteLine(notesValue);
+            }
             await context.Publish<OrderSubmitted>(new
             {
                 context.Message.OrderId,
                 TimeStap = context.Message.TimeStapm,
                 context.Message.CustomerNumber,
                 context.Message.PaymentCardNumber
+                ,context.Message.Notes
             });
             if (context.RequestId != null)
                 await context.RespondAsync<OrderSubmitionAccepted>(new

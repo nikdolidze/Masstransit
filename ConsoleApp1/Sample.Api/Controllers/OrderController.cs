@@ -1,5 +1,6 @@
 ﻿using MassTransit;
 using MassTransit.Definition;
+using MassTransit.MessageData;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Sample.Components.Consumers;
@@ -55,28 +56,46 @@ namespace Sample.Api.Controllers
         }
 
 
+        public class OrderModel
+        {
+            public Guid Id { get; set; }
+            public string CustomerNumber { get; set; }
+            public string PaymentCardNumber { get; set; }
+            public string Notes { get; set; }
+        }
+
 
         [HttpPost]
-        public async Task<IActionResult> Post(string customerNumber,string paymentCardNumber)
+        public async Task<IActionResult> Post(OrderModel order)
         {
-            var (excepdet, rejected) =
+            var (accepted, rejected) =
                  await _submitOrderRequestClient.GetResponse<OrderSubmitionAccepted, OrderSubmitedRejected>(new
                  {
 
-                     OrderId = Guid.NewGuid(),
+                     OrderId = order.Id,
                      TimeStapm = InVar.Timestamp,
-                     CustomerNumber = customerNumber,
-                     PaymentCardNumber =paymentCardNumber
+                     CustomerNumber = order.CustomerNumber,
+                     PaymentCardNumber = order.PaymentCardNumber,
+                     Notes =order.Notes
                  });
-            if (excepdet.IsCompletedSuccessfully)
+            if (accepted.IsCompletedSuccessfully)
             {
-                var response = await excepdet;
-                return Ok(response);
+                var response = await accepted;
+
+                return Accepted(response);
+            }
+
+            if (accepted.IsCompleted)
+            {
+                await accepted;
+
+                return Problem("Order was not accepted");
             }
             else
             {
                 var response = await rejected;
-                return BadRequest(response);
+
+                return BadRequest(response.Message);
             }
 
         }
